@@ -241,3 +241,5 @@ def apply_smoothing(current_value: float,
 
     return smoothing_factor * previous_value + \
            (1 - smoothing_factor) * current_value
+
+
