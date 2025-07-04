@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Gym Trainer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg text-center max-w-4xl w-full">
+        <h1 class="text-4xl font-bold text-gray-800 mb-6">AI Gym Trainer</h1>
+
+        <div class="mb-8">
+            <label for="exerciseSelect" class="block text-lg font-medium text-gray-700 mb-2">Select Exercise:</label>
+            <select id="exerciseSelect"
+                class="mt-1 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="none">-- Select --</option>
+                <option value="bicep_curl">Bicep Curl</option>
+                <option value="lunges">Lunges</option>
+                <option value="squats">Squats</option>
+                <!-- Uncomment below when backend support is added -->
+                <!-- <option value="tricep_kickback">Tricep Kickback</option> -->
+            </select>
+        </div>
+
+        <div class="relative w-full max-w-2xl mx-auto bg-gray-900 rounded-lg overflow-hidden shadow-xl">
+            <img id="videoStream" src="" alt="Live AI Trainer Feed" class="w-full h-auto rounded-lg">
+            <div id="loadingMessage"
+                class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 text-white text-xl transition-opacity duration-300">
+                Loading camera... Please select an exercise.
+            </div>
+        </div>
+
+        <div class="mt-6">
+            <button id="startBtn"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md mr-4">
+                Start Trainer
+            </button>
+            <button id="stopBtn"
+                class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg shadow-md">
+                Stop Trainer
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const videoStream = document.getElementById('videoStream');
+        const exerciseSelect = document.getElementById('exerciseSelect');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const loadingMessage = document.getElementById('loadingMessage');
+        let currentExercise = 'none';
+
+        function startVideoStream() {
+            if (currentExercise === 'none') {
+                alert('Please select an exercise first!');
+                return;
+            }
+
+            // If exercise not implemented, warn user
+            if (!['bicep_curl', 'squats', 'lunges'].includes(currentExercise)) {
+                alert(`"${currentExercise}" is not yet supported in the backend.`);
+                return;
+            }
+
+            loadingMessage.style.display = 'flex';
+            videoStream.src = `/video_feed/${currentExercise}?t=${Date.now()}`;
+
+            videoStream.onload = () => {
+                loadingMessage.style.display = 'none';
+            };
+
+            videoStream.onerror = () => {
+                loadingMessage.innerText = '❌ Error loading camera feed. Please ensure camera is available.';
+            };
+
+            // Safety timeout
+            setTimeout(() => {
+                if (loadingMessage.style.display !== 'none') {
+                    loadingMessage.innerText = '⏳ Still loading... Please check your camera or try another exercise.';
+                }
+            }, 5000);
+        }
+
+        function stopVideoStream() {
+            videoStream.src = '';
+            loadingMessage.style.display = 'flex';
+            loadingMessage.innerText = 'Camera stopped. Select an exercise to restart.';
+            fetch('/release_camera').then(res => res.json());
+        }
+
+        exerciseSelect.addEventListener('change', (e) => {
+            currentExercise = e.target.value;
+            if (videoStream.src) {
+                stopVideoStream();
+                setTimeout(startVideoStream, 500);
+            }
+        });
+
+        startBtn.addEventListener('click', startVideoStream);
+        stopBtn.addEventListener('click', stopVideoStream);
+        window.addEventListener('beforeunload', stopVideoStream);
+        window.addEventListener('unload', stopVideoStream);
+        stopVideoStream();
+    </script>
+</body>
+
+</html>
