@@ -1,0 +1,80 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment folders
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# MediaPipe cache
+mediapipe/modules/pose_landmark/pose_landmark_full.tflite
+
+# Model or weights files
+*.h5
+*.hdf5
+*.tflite
+*.onnx
+*.pb
+*.pkl
+*.joblib
+*.pt
+*.weights
+*.ckpt
+
+# Log files
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Python virtual environment files
+*.egg-info/
+.eggs/
+*.egg
+dist/
+build/
+
+# Test or debug files
+*.bak
+*.old
+*.swp
+
+# Misc
+*.sqlite3
+*.db
+
+# Secrets
+.env
+.env.*
+
+# Node.js (if used in frontend)
+node_modules/
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+
+# Files generated during builds
+*.manifest
+*.spec
+
+# Others
+*.iml
